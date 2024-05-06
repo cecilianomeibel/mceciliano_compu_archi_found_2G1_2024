@@ -19,7 +19,7 @@ module mux_4to1_tb;
     initial begin
         // Aplicar estímulo y observar resultados
         // Caso 1:
-		  sel = 2'b11;
+		  sel = 2'b01;
         d0 = 4'b1110;
 		  d1 = 4'b1010;
 		  d2 = 4'b0110;
