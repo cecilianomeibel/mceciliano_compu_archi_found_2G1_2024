@@ -1,17 +1,17 @@
 module orGate_tb;
 
-//Definir señales 
+	//Definir señales 
 
-logic [3:0] a;
-logic [3:0] b;
-logic [3:0] result;
+	logic [3:0] a;
+	logic [3:0] b;
+	logic [3:0] result;
 
-// Instancia del módulo bajo prueba
-  orGate dut (
-      .a(a),
-      .b(b),
-      .result(result)
-  );
+	// Instancia del módulo bajo prueba
+	  orGate dut (
+			.a(a),
+			.b(b),
+			.result(result)
+	  );
   
 
   // Inicialización de señales

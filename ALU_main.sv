@@ -1,22 +1,22 @@
 module ALU_main(
 
-	input logic [3:0] A_num,
-	input logic [3:0] B_num,
-	input logic [1:0] ALUControl,
-	output logic [3:0] result
+	input logic [3:0] A_num,			//Primer operando
+	input logic [3:0] B_num,			//Segundo operando
+	input logic [1:0] ALUControl,		//Selector
+	output logic [3:0] result			//Resultado final elegido
 	
 );
 
 	//Variables internas
 	
-	logic [3:0] B_neg;
-	logic [3:0] B_final;
-	logic [3:0] result_and;
-	logic [3:0] result_or;
-	logic [3:0] result_sum;
-	logic cout;
+	logic [3:0] B_neg;			//Complemento del segundo operando
+	logic [3:0] B_final;			//Segundo operando final resultante del mux 2:1
+	logic [3:0] result_and;		//Resultado de la operación AND
+	logic [3:0] result_or;		//Resultado de la operación OR
+	logic [3:0] result_sum;		//Resultado del sumador
+	logic cout;						//Acarreo final
 	
-	//Obteniendo el complmento de B_num
+	//Obteniendo el complemento de B_num
 	always @(*) begin
 	B_neg <= ~B_num;
 	end
