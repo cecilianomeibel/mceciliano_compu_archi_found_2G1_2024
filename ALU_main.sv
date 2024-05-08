@@ -3,7 +3,8 @@ module ALU_main(
 	input logic [3:0] A_num,			//Primer operando
 	input logic [3:0] B_num,			//Segundo operando
 	input logic [1:0] ALUControl,		//Selector
-	output logic [3:0] result			//Resultado final elegido
+	output logic [3:0] result,			//Resultado final elegido
+	output logic V_flag, C_flag, N_flag, Z_flag
 	
 );
 
@@ -54,13 +55,28 @@ module ALU_main(
 	
 	// Instancia del módulo del Mux 4:1
     mux_4to1 mux_4 (
-        .d0(result_sum),
-        .d1(result_sum),
-        .d2(result_and),
-        .d3(result_or),
-        .sel(ALUControl),
-        .y(result)
+		.d0(result_sum),
+		.d1(result_sum),
+		.d2(result_and),
+		.d3(result_or),
+		.sel(ALUControl),
+		.y(result)
     );
+	 
+	 // Instancia del módulo que determina las banderas
+	 ALU_flags flags(
+		.A_msb(A_num[3]),
+		.B_msb(B_num[3]),
+		.ALUControl(ALUControl),
+		.result(result),
+		.Sum_msb(result_sum[3]),
+		.result_MSB(result[3]),
+		.cout(cout),
+		.V_flag(V_flag),
+		.C_flag(C_flag),
+		.N_flag(N_flag),
+		.Z_flag(Z_flag)
+	 );
 	 
 
 endmodule

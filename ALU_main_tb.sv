@@ -4,6 +4,7 @@ module ALU_main_tb;
     logic [3:0] A_num_tb;
     logic [3:0] B_num_tb;
     logic [1:0] ALUControl_tb;
+	 logic V_flag, C_flag, N_flag, Z_flag;
 
     // Outputs
     logic [3:0] result_tb;
@@ -13,21 +14,25 @@ module ALU_main_tb;
         .A_num(A_num_tb),
         .B_num(B_num_tb),
         .ALUControl(ALUControl_tb),
-        .result(result_tb)
+        .result(result_tb),
+		  .V_flag(V_flag),
+		  .C_flag(C_flag),
+		  .N_flag(N_flag),
+		  .Z_flag(Z_flag)
     );
 
     // Define test vectors
     initial begin
         // Test case 1: ALUControl = 00 (AND operation)
-        A_num_tb = 4'b1011; // 10 in binary
+        A_num_tb = 4'b0111; // 10 in binary
         B_num_tb = 4'b0010; // 6 in binary
         ALUControl_tb = 2'b00;
         #10; // Delay for propagation
 
 
         // Test case 2: ALUControl = 01 (OR operation)
-        A_num_tb = 4'b1000; // 10 in binary
-        B_num_tb = 4'b0100; // 6 in binary
+        A_num_tb = 4'b1111; // 10 in binary
+        B_num_tb = 4'b1111; // 6 in binary
         ALUControl_tb = 2'b01;
         #10; // Delay for propagation
 
