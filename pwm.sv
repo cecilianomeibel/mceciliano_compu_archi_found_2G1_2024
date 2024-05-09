@@ -1,5 +1,5 @@
 module pwm (
-	input reg[3:0] ALU_result, input logic clk, rst,
+	input reg[3:0] result, input logic clk, rst,
 	output speed_motor
 );
 	
@@ -17,7 +17,12 @@ module pwm (
 		Q_next = Q_reg + 1;
 	end
 	
-	assign duty_cycle = ALU_result * (2**8)/15;
+	assign duty_cycle = result * (2**8)/15;
 	assign speed_motor = (Q_reg < duty_cycle);
+	
+	disp7seg disp7seg_inst(
+		 .result(result),
+		 .seg(seg)
+		  );
 	
 endmodule
