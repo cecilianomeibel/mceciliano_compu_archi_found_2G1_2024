@@ -1,28 +1,21 @@
-module pwm (
-	input reg[3:0] result, input logic clk, rst,
-	output speed_motor
-);
-	
-	reg[8:0] duty_cycle;
-	reg [7:0] Q_reg, Q_next;
-	
-	always @ (posedge clk, negedge rst) begin
-		if (!rst)
-			Q_reg = 8'b00000000;
-		else
-			Q_reg = Q_next;
-	end
-	
-	always @(*) begin
-		Q_next = Q_reg + 1;
-	end
-	
-	assign duty_cycle = result * (2**8)/15;
-	assign speed_motor = (Q_reg < duty_cycle);
-	
-	disp7seg disp7seg_inst(
-		 .result(result),
-		 .seg(seg)
-		  );
-	
+module PWM 
+	(input  logic                 clk,
+	 input  logic                 rstN,
+	 input  logic [3:0] result,
+	 output logic                 speed_motor);
+
+  logic [3:0] Q;
+  logic pwmNext, aboveResult;
+  
+  Counter counter(clk, rstN, Q);
+  Comparator comparator(Q, result, aboveResult);
+  
+  always_comb begin
+	 pwmNext = (aboveResult)? 0 : 1;
+  end
+
+  always_ff @(posedge clk or negedge rstN) begin
+    speed_motor = (!rstN)? 4'd0 : pwmNext;
+  end
+
 endmodule
