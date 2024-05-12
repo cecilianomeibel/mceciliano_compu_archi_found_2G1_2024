@@ -21,9 +21,11 @@ module slave_prueba2(
 		if(!reset) begin
 			operando_1 = 4'b0000;
 			operando_2 = 4'b0000;
-			contador_bits = 4'b0000;
+			contador_bits = 0;
 			operador = 4'b0000;
 			enable = 0;
+			leds = 4'b0000;
+			handShake_confirmation = 0;
 		end
 		else begin
 			operando_1[3] = (handShake_confirmation == 1 && contador_bits == 0 && CS == 0) ? MOSI: operando_1[3];
@@ -43,14 +45,15 @@ module slave_prueba2(
 			
 			enable = (contador_bits >= 11) ? 1: 0;
 			
-			contador_bits = (handShake_confirmation == 1 && CS == 0) ? contador_bits + 1: 0;
+			contador_bits = (handShake_confirmation == 1 && CS == 0 && contador_bits < 11) ? contador_bits + 1: 0;
 			
 			handShake_confirmation = (CS == 0 && MOSI == 1) ? 1: handShake_confirmation;
+			//leds[0] = (handShake_confirmation == 1 && enable == 1) ? 1: 0;
+			leds = (handShake_confirmation == 1 && enable == 1) ? operando_2: leds;
 			
 		
 			MISO = (handShake_confirmation == 1) ? 1: 0;
 			
-			leds = (enable == 1) ? operando_2: leds;
 		end
 		
 	end
