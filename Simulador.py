@@ -45,13 +45,14 @@ instrucciones_lista = [
                 "add x29 x29 x31",
                 "sw x29 12 x12",
                 "jalr x0 x1 0",
+                "addi x17 x0 10",
                 "ecall"
                 ]
 
 ####################### Creacion de la ventana #############################
 root = Tk()
 root.title("RISCV")
-root.geometry('1260x680')
+root.geometry('1160x480')
 root.resizable(False, False)
 
 
@@ -81,6 +82,28 @@ instrLabel.place(x = 740, y = 21)
 currInstruction.set("-----")
 
 
+# Se coloca la imagen inicial del procesador uniciclo
+newImg = ImageTk.PhotoImage(Image.open("images\\Estatico.png"))
+
+# Crear un Label que contenga la imagen
+procesador_dig = Label(root, image=newImg)
+procesador_dig.place(x= 10, y = 60)
+
+#################################### Registros ##################################
+
+# Crear el widget Canvas
+canvas = Canvas(root, width=200, height=320)
+canvas.pack()
+canvas.place(x = 900, y = 40)
+
+# Crear el rectángulo menores x1,y1; mayores x2, y2
+canvas.create_rectangle(5, 5, 200, 320, fill="white", outline="black")
+
+x0 = Label(text="x0 | zero --->"); x0.place(x=910,y=50)
+x1 = Label(text="x1 | ra --->"); x1.place(x=910,y=70)
+
+
+
 
 ################################ Funciones ################################
 
@@ -98,6 +121,7 @@ def next_instruction():
 
 # Función para ir a la instrucción previa
 def prev_instruction():
+    global procesador_dig
     global current_index
     if current_index > 0:
         current_index -= 1
@@ -106,10 +130,21 @@ def prev_instruction():
 
 # Función para cargar la imagen correspondiente
 def load_image(instruction):
-    first_word = instruction.split()[0]
+    #first_word = instruction.split()[0]
+    global procesador_dig
     try:
-        image = Image.open(f"{first_word}.PNG")
-        return ImageTk.PhotoImage(image)
+        if(instruction == "ret" or instruction == "li" or instruction == "ecall"
+           or instruction == "la a0"):
+            #image = Image.open("images\\Estatico.PNG")
+            newImg = ImageTk.PhotoImage(Image.open("images\\Estatico.PNG"))
+            procesador_dig.config(image=newImg)
+            procesador_dig.image = newImg
+
+        else:
+            newImg = ImageTk.PhotoImage(Image.open("images\\"+ instruction + ".PNG"))
+            procesador_dig.config(image=newImg)
+            procesador_dig.image = newImg
+            #return ImageTk.PhotoImage(image)
     except Exception as e:
         print(f"Error loading image: {e}")
         return None
@@ -213,15 +248,6 @@ def sub(registro_destino, registro_fuente1, registro_fuente2):
 
 ########################################## Creación de elementos de interacción ##########################################
 
-
-# Se coloca la imagen inicial del procesador uniciclo
-newImg = ImageTk.PhotoImage(Image.open("images\\uniciclo.png"))
-
-# Crear un Label que contenga la imagen
-imageLabel = Label(root, image=newImg)
-imageLabel.place(x= 10, y = 60)
-
-
 # Botones de la interfaz
 """
 pipeButton = Button(root, text="Uniciclo", command=lambda: ChangeProcessor(imgLabel, cpuType))
@@ -263,23 +289,23 @@ inputtxt.place(x = 470, y = 25)
 ####################### Sección inferior de la ventana #############################################3
 
 execLabel = Label(text="Execution info")
-execLabel.place(x = 25, y = 550)
+execLabel.place(x = 25, y = 360)
 
 cpiLabel = Label(text="CPI: ")
-cpiLabel.place(x = 40, y = 580)
+cpiLabel.place(x = 40, y = 380)
 cpiLabel_value = Label(textvariable=cpi)
-cpiLabel_value.place(x = 70, y = 580)
+cpiLabel_value.place(x = 70, y = 380)
 
 ciclosLabel = Label(text="Ciclos: ")
-ciclosLabel.place(x = 40, y = 610 )
+ciclosLabel.place(x = 40, y = 410 )
 ciclosLabel_value = Label(textvariable=ciclos)
-ciclosLabel_value.place(x = 80, y = 610)
+ciclosLabel_value.place(x = 80, y = 410)
 
 
 pc_Label = Label(text="PC: ")
-pc_Label.place(x = 40, y = 640)
+pc_Label.place(x = 40, y = 440)
 pc_Label_value = Label(textvariable=instrucciones)
-pc_Label_value.place(x = 70, y = 640)
+pc_Label_value.place(x = 70, y = 440)
 
 
 root.mainloop()
