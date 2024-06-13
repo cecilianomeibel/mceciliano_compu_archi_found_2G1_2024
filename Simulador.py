@@ -2,12 +2,56 @@
 import time
 from tkinter import *
 from PIL import ImageTk, Image
+from verf_instr import update_instruction
+from verf_instr import len_instructions
 
+# Índice inicial
+current_index = 0
+largo_instrucciones = len_instructions()
+instrucciones_lista = [
+                "auipc x10 0x10000",
+                "addi x10 x10 0",
+                "auipc x11 0x10000",
+                "addi x11 x11 8",
+                "auipc x12 0x10000",
+                "addi x12 x12 16",
+                "jal x1 12 <matrix_mul>",
+                "lw x5 0 x10",
+                "lw x6 4 x10",
+                "lw x7 0 x11",
+                "lw x28 4 x11",
+                "mul x29 x5 x7",
+                "lw x30 8 x11",
+                "mul x31 x6 x30",
+                "add x29 x29 x31",
+                "sw x29 0 x12",
+                "mul x29 x5 x28",
+                "lw x30 12 x11",
+                "mul x31 x6 x30",
+                "add x29 x29 x31",
+                "sw x29 4 x12",
+                "lw x5 8 x10",
+                "lw x6 12 x10",
+                "lw x7 0 x11",
+                "mul x29 x5 x7",
+                "lw x30 8 x11",
+                "mul x31 x6 x30",
+                "add x29 x29 x31",
+                "sw x29 8 x12",
+                "lw x28 4 x11",
+                "mul x29 x5 x28",
+                "lw x30 12",
+                "mul x31 x6 x30",
+                "add x29 x29 x31",
+                "sw x29 12 x12",
+                "jalr x0 x1 0",
+                "ecall"
+                ]
 
 ####################### Creacion de la ventana #############################
 root = Tk()
 root.title("RISCV")
-root.geometry('1260x730')
+root.geometry('1260x680')
 root.resizable(False, False)
 
 
@@ -27,69 +71,63 @@ cpi.set("0")
 instrucciones = StringVar()
 instrucciones.set("0")
 
-"""
-img = ImageTk.PhotoImage(Image.open("images\\uniciclo.png"))
-imgLabel = Label(image=img)
-imgLabel.grid(column=0,row=2)
-
-"""
-
 currInstruction = StringVar()
 
+instrLabel = Label(text="Instrucción actual ---> ")
+instrLabel.place(x = 600, y = 25)
+
 instrLabel = Label(textvariable=currInstruction, font=("Arial", 14))
-instrLabel.grid(column=0,row=1)
+instrLabel.place(x = 740, y = 21)
+currInstruction.set("-----")
 
 
 
-################################ Funciones #############################################3
+################################ Funciones ################################
 
-def ChangeProcessor(label, type):    
-    global cpuType
+# Función para ir a la siguiente instrucción
+def next_instruction():
+    global current_index
 
-    if type == "uni":
-        newImg = ImageTk.PhotoImage(Image.open("images\\pipelined.png"))   
-        cpuType = "pipe"
+    if current_index < largo_instrucciones - 1:
+        current_index += 1
+        instruccion = update_instruction(current_index);
+        load_image(instruccion)
+    else:
+        current_index = 0;
+        
 
-    elif type == "pipe":
-        newImg = ImageTk.PhotoImage(Image.open("images\\uniciclo.png"))
-        cpuType = "uni"
+# Función para ir a la instrucción previa
+def prev_instruction():
+    global current_index
+    if current_index > 0:
+        current_index -= 1
+        instruccion = update_instruction(current_index);
+        load_image(instruccion)
 
-    label.configure(image=newImg)  
-    label.photo = newImg
+# Función para cargar la imagen correspondiente
+def load_image(instruction):
+    first_word = instruction.split()[0]
+    try:
+        image = Image.open(f"{first_word}.PNG")
+        return ImageTk.PhotoImage(image)
+    except Exception as e:
+        print(f"Error loading image: {e}")
+        return None
 
 def update_label(text):
     currInstruction.set(text)
+    next_instruction();
+
     
-def criba():
-    update_label("addi x1 x0 2")
-    instrLabel.after(1000, lambda:update_label("addi x2 x0 1"))
-    instrLabel.after(2000, lambda:update_label("addi x3 x0 0"))
-    instrLabel.after(3000, lambda:update_label("addi x8 x0 2"))
-    instrLabel.after(4000, lambda:update_label("addi x7 x0 10"))
-    instrLabel.after(5000, lambda:update_label("lw x7 -16 x7"))
-    instrLabel.after(6000, lambda:update_label("addi x7 x7 1"))
-    instrLabel.after(7000, lambda:update_label("sub x4 x3 x2"))
-    instrLabel.after(8000, lambda:update_label("beq x3 x7 88"))
-    instrLabel.after(9000, lambda:update_label("jal x0 4"))
-    instrLabel.after(10000, lambda:update_label("beq x3 x0 32"))
-    instrLabel.after(11000, lambda:update_label("beq x3 x2 28"))
-    instrLabel.after(12000, lambda:update_label("addi x1 x0 2"))
-    instrLabel.after(13000, lambda:update_label("addi x3 x3 1"))
-    instrLabel.after(14000, lambda:update_label("sub x4 x3 x2"))
-    instrLabel.after(15000, lambda:update_label("jal x0 -52"))
-    instrLabel.after(16000, lambda:update_label("beq x3 x7 88"))
-    instrLabel.after(17000, lambda:update_label("jal x0 4"))
-    instrLabel.after(18000, lambda:update_label("beq x3 x0 32"))
-    instrLabel.after(19000, lambda:update_label("beq x3 x2 28"))
-    instrLabel.after(20000, lambda:update_label("beq x3 x8 40"))
-    instrLabel.after(21000, lambda:update_label("addi x10 x3 0"))
-    instrLabel.after(22000, lambda:update_label("addi x17 x0 1"))
-    print(2)
-    instrLabel.after(23000, lambda:update_label("addi x10 x0 10"))
-    instrLabel.after(24000, lambda:update_label("addi x10 x10 -96"))
-    instrLabel.after(25000, lambda:update_label("addi x17 x0 4"))
-    print(3)
-    
+def run_all():
+    late = 1000
+    index = 0
+    while index < len(instrucciones_lista):
+        instrLabel.after(late, lambda idx=index: update_label(instrucciones_lista[idx]))
+        late += 1000
+        index += 1
+
+
 def ExecutionInfo():
     if cpuType == "pipe":
         ciclos.set("326") 
@@ -196,15 +234,12 @@ uniButton.grid(column=1,row=0)
 ####################### Sección superior interactiva de la ventana #############################################3
 
 stepLabel = Label(text="Step by step")
-#stepLabel.grid(column=0,row=0)
 stepLabel.place(x=220,y=25)
 
-prevButton = Button(root, text="Previo")
-#prevButton.grid(column=3,row=1)
+prevButton = Button(root, text="Previo", command=prev_instruction)
 prevButton.place(x = 300, y = 20)
 
-nextButton = Button(root, text="Siguiente")
-#nextButton.grid(column=4,row=1)
+nextButton = Button(root, text="Siguiente", command=next_instruction)
 nextButton.place(x = 360, y =20 )
 
 
@@ -213,47 +248,38 @@ ritmoLabel = Label(text="Ritmo de clock")
 ritmoLabel.place(x = 450, y = 25)
 
 
-playButton = Button(root, text="Run all", command=criba)
-#playButton.grid(column=3,row=3)
+playButton = Button(root, text="Run all", command=run_all)
 playButton.place(x = 40, y = 20)
 
 
 skipButton = Button(root, text="Resultado final", command=ExecutionInfo)
-#skipButton.grid(column=3,row=6)
 skipButton.place(x = 100, y = 20)
 
+# TextBox Creation 
+inputtxt = Entry(width=5)
+inputtxt.place(x = 470, y = 25)
 
 
 ####################### Sección inferior de la ventana #############################################3
 
 execLabel = Label(text="Execution info")
-#execLabel.grid(column=0,row=7)
 execLabel.place(x = 25, y = 550)
 
 cpiLabel = Label(text="CPI: ")
-#cpiLabel.grid(column=0,row=8)
 cpiLabel.place(x = 40, y = 580)
-
 cpiLabel_value = Label(textvariable=cpi)
-#cpiLabel_value.grid(column=1,row=8)
 cpiLabel_value.place(x = 70, y = 580)
 
 ciclosLabel = Label(text="Ciclos: ")
-ciclosLabel.grid(column=0,row=9)
+ciclosLabel.place(x = 40, y = 610 )
+ciclosLabel_value = Label(textvariable=ciclos)
+ciclosLabel_value.place(x = 80, y = 610)
 
-"""
-ciclosLabel = Label(text="Ciclos: ")
-ciclosLabel.grid(column=0,row=9)
 
-ciclosLabel2 = Label(textvariable=ciclos)
-ciclosLabel2.grid(column=1,row=9)
+pc_Label = Label(text="PC: ")
+pc_Label.place(x = 40, y = 640)
+pc_Label_value = Label(textvariable=instrucciones)
+pc_Label_value.place(x = 70, y = 640)
 
-instrLabel = Label(textvariable="Instrucciones: ")
-instrLabel.grid(column=0,row=10)
-
-instrLabel2 = Label(textvariable=instrucciones)
-instrLabel2.grid(column=1,row=10)
-
-"""
 
 root.mainloop()
